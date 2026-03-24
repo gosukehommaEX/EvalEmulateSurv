@@ -1,0 +1,22 @@
+Package: EvalEmulateSurv
+Type: Package
+Title: Evaluate accuracy of the emulated survival dataset
+Version: 0.1.0
+Authors@R: c(
+    person(given  = "Gosuke",
+           family = "Homma",
+           role   = c("aut", "cre"),
+           email  = "my.name.is.gosuke@gmail.com"),
+    person(given  = "Eamonn",
+           family = "Bolger",
+           role   = c("aut")),
+    person(given  = "Annie",
+           family = "Wang",
+           role   = c("aut")))
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
