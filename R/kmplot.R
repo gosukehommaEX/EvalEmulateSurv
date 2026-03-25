@@ -111,7 +111,6 @@
 #'   \code{\link{ksdist}}, \code{\link{rmse}}
 #'
 #' @import ggplot2
-#' @import dplyr
 #'
 #' @examples
 #' # -------------------------------------------------------------------
@@ -454,7 +453,7 @@ kmplot <- function(data_group1,
     annot_df$stratum  <- factor(annot_df$stratum,  levels = strata)
 
     step_df$group <- factor(step_df$group,
-                            levels = c(label_group1, label_group2))
+                             levels = c(label_group1, label_group2))
 
     # Build ggplot with facet_wrap
     ggplot2::ggplot() +

@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarytable.R
 \name{summarytable}
 \alias{summarytable}
-\title{Compute NAUC, K-S Distance, and RMSE by Subgroup}
+\title{Compute NAUC, K-S Distance, RMSE, and Descriptive Statistics by Subgroup}
 \usage{
 summarytable(
   data_group1,
@@ -12,6 +12,9 @@ summarytable(
   tau = NULL,
   subgroup_vars = NULL,
   n_points = 100L,
+  conf_level = 0.95,
+  label_group1 = "g1",
+  label_group2 = "g2",
   nauc_method_avg = c("weighted", "simple"),
   ks_method_avg = c("simple", "weighted"),
   rmse_method_avg = c("simple", "weighted")
@@ -49,6 +52,16 @@ overall population is computed.}
 \item{n_points}{Positive integer. Number of evenly spaced time
 points used for RMSE calculation. Default \code{100L}.}
 
+\item{conf_level}{Numeric in \code{(0, 1)}. Confidence level for
+the median survival time CI. Default \code{0.95}. Passed to
+\code{\link{km_est}}.}
+
+\item{label_group1}{Character. Display label for group 1 used in the
+\code{print()} output. Default \code{"g1"}.}
+
+\item{label_group2}{Character. Display label for group 2 used in the
+\code{print()} output. Default \code{"g2"}.}
+
 \item{nauc_method_avg}{Character. Aggregation method for NAUC across
 strata. One of \code{"weighted"} (default, per Zhao et al. 2025) or
 \code{"simple"}. Passed to \code{\link{nauc}}.}
@@ -71,29 +84,35 @@ row per stratum per subgroup specification. Columns:
 \code{"Overall"} for the overall population row.}
 \item{\code{n_group1}}{Sample size of group 1 in that stratum.}
 \item{\code{n_group2}}{Sample size of group 2 in that stratum.}
-\item{\code{n_total}}{Combined sample size in that stratum.}
+\item{\code{events_group1}}{Number of events in group 1.}
+\item{\code{events_group2}}{Number of events in group 2.}
+\item{\code{median_group1}}{Median survival time for group 1.}
+\item{\code{median_ci_group1}}{95\\% CI for median of group 1 as a
+character string \code{"[lower, upper]"}.}
+\item{\code{median_group2}}{Median survival time for group 2.}
+\item{\code{median_ci_group2}}{95\\% CI for median of group 2 as a
+character string \code{"[lower, upper]"}.}
 \item{\code{nauc}}{NAUC value for that stratum.}
 \item{\code{ks}}{K-S distance value for that stratum.}
 \item{\code{t_max_gap}}{Time point at which the maximum K-S gap is
 achieved.}
 \item{\code{rmse}}{RMSE value for that stratum.}
 \item{\code{nauc_aggregate}}{Aggregate NAUC across strata within the
-subgroup specification, computed using \code{nauc_method_avg}.
-\code{NA} for the \code{"Overall"} block.}
-\item{\code{ks_aggregate}}{Aggregate K-S distance across strata,
-computed using \code{ks_method_avg}. \code{NA} for the
+subgroup specification. \code{NA} for the \code{"Overall"} block.}
+\item{\code{ks_aggregate}}{Aggregate K-S distance. \code{NA} for the
 \code{"Overall"} block.}
-\item{\code{rmse_aggregate}}{Aggregate RMSE across strata, computed
-using \code{rmse_method_avg}. \code{NA} for the \code{"Overall"}
-block.}
+\item{\code{rmse_aggregate}}{Aggregate RMSE. \code{NA} for the
+\code{"Overall"} block.}
 }
 }
 \description{
 Computes three evaluation metrics -- NAUC, Kolmogorov-Smirnov (K-S)
-distance, and RMSE -- for the overall population and for each level of
-one or more subgroup variables. Results are returned as an object of
-class \code{EvalMetrics}, which inherits from \code{data.frame} and has
-a dedicated \code{print()} method for formatted console output.
+distance, and RMSE -- together with descriptive survival statistics
+(sample size, event count, median survival time with 95\\% CI) for the
+overall population and for each level of one or more subgroup variables.
+Results are returned as an object of class \code{EvalMetrics}, which
+inherits from \code{data.frame} and has a dedicated \code{print()} method
+for formatted console output.
 }
 \details{
 Each metric is computed by calling \code{\link{nauc}},
@@ -104,6 +123,11 @@ prepended to each subgroup block.
 NAUC and K-S distance are computed over \eqn{[0, \tau]}. RMSE is always
 computed over the full observation range of each stratum (\code{tau = NULL}
 internally), following Lang et al. (2025).
+
+Descriptive statistics (sample size, events, median survival time and its
+CI) are obtained from \code{\link{km_est}}, which implements the Greenwood
+variance formula with a log transformation for the CI -- the same approach
+as \code{survival::survfit} with \code{conf.type = "log"}.
 
 \strong{Subgroup specification via \code{subgroup_vars}:}
 
@@ -118,7 +142,8 @@ supported for any N.
 The returned object has class \code{c("EvalMetrics", "data.frame")} and
 can be used as a plain \code{data.frame} in all downstream operations.
 Calling \code{print()} on it renders a formatted table grouped by
-\code{subgroup_spec}, with benchmark indicators for each metric.
+\code{subgroup_spec}, with descriptive statistics and metric values
+side by side.
 }
 \examples{
 # -------------------------------------------------------------------
@@ -140,11 +165,13 @@ grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
 # 1. Overall only
 # -------------------------------------------------------------------
 res <- summarytable(
-  data_group1 = grp1_os,
-  data_group2 = grp2_os,
-  time_var    = "TIME",
-  event_var   = "EVENT",
-  tau         = 36
+  data_group1  = grp1_os,
+  data_group2  = grp2_os,
+  time_var     = "TIME",
+  event_var    = "EVENT",
+  tau          = 36,
+  label_group1 = "Original",
+  label_group2 = "Emulated"
 )
 print(res)
 
@@ -157,7 +184,9 @@ res_region <- summarytable(
   time_var      = "TIME",
   event_var     = "EVENT",
   tau           = 36,
-  subgroup_vars = "REGION"
+  subgroup_vars = "REGION",
+  label_group1  = "Original",
+  label_group2  = "Emulated"
 )
 print(res_region)
 
@@ -170,7 +199,9 @@ res_os <- summarytable(
   time_var      = "TIME",
   event_var     = "EVENT",
   tau           = 36,
-  subgroup_vars = c("SEX", "REGION")
+  subgroup_vars = c("SEX", "REGION"),
+  label_group1  = "Original",
+  label_group2  = "Emulated"
 )
 print(res_os)
 
@@ -183,7 +214,9 @@ res_inter <- summarytable(
   time_var      = "TIME",
   event_var     = "EVENT",
   tau           = 36,
-  subgroup_vars = "SEX:REGION"
+  subgroup_vars = "SEX:REGION",
+  label_group1  = "Original",
+  label_group2  = "Emulated"
 )
 print(res_inter)
 
@@ -197,6 +230,8 @@ res_pfs <- summarytable(
   event_var        = "EVENT",
   tau              = 24,
   subgroup_vars    = c("SEX", "REGION", "SEX:REGION"),
+  label_group1     = "Original",
+  label_group2     = "Emulated",
   rmse_method_avg  = "weighted"
 )
 print(res_pfs)

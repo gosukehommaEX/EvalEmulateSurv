@@ -4,13 +4,23 @@
 \alias{print.EvalMetrics}
 \title{Print Method for \code{EvalMetrics} Objects}
 \usage{
-\method{print}{EvalMetrics}(x, digits = 4L, kable = FALSE, kable_format = "pipe", ...)
+\method{print}{EvalMetrics}(
+  x,
+  digits = 4L,
+  digits_surv = 2L,
+  kable = FALSE,
+  kable_format = "pipe",
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{EvalMetrics}.}
 
 \item{digits}{Non-negative integer. Number of decimal places for
 NAUC, K-S distance, and RMSE values. Default \code{4}.}
+
+\item{digits_surv}{Non-negative integer. Number of decimal places for
+median survival time and CI values. Default \code{2}.}
 
 \item{kable}{Logical. If \code{TRUE}, format output using
 \code{knitr::kable()}. If \code{FALSE} (default), display as plain
@@ -29,11 +39,11 @@ and subgroup row-grouping are applied via \code{kableExtra::pack_rows()}.}
 }
 \description{
 Prints a formatted summary of an \code{EvalMetrics} object returned by
-\code{\link{summarytable}}. Results are grouped by
-\code{subgroup_spec} and displayed with fixed-width columns for easy
-reading. Aggregate values are printed once per subgroup block after the
-per-stratum rows. The line width is computed dynamically from the content
-so that separators always fit the output exactly.
+\code{\link{summarytable}}. Results are grouped by \code{subgroup_spec}
+and displayed in two sections per block: descriptive statistics (N, events,
+median survival time with CI) followed by evaluation metrics (NAUC, KS,
+RMSE). The line width is computed dynamically from the content so that
+separators always fit the output exactly.
 
 When \code{kable = TRUE}, the table is formatted using
 \code{knitr::kable()}. For \code{kable_format = "html"}, additional

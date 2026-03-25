@@ -129,7 +129,6 @@
 #' @seealso \code{\link{load_ipd}}, \code{\link{km_est}},
 #'   \code{\link{nauc}}, \code{\link{rmse}}
 #'
-#' @import dplyr
 #'
 #' @examples
 #' # -------------------------------------------------------------------

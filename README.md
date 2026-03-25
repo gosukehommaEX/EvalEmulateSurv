@@ -23,6 +23,8 @@ Kaplan-Meier survival curves:
 
 All metrics can be computed for the overall population and for subgroups
 defined by single variables or N-way interaction terms (e.g., `"SEX:REGION"`).
+Descriptive survival statistics (sample size, event count, median survival
+time with confidence interval) are also provided alongside the metrics.
 
 ## Installation
 
@@ -36,12 +38,12 @@ remotes::install_github("gohomma/EvalEmulateSurv")
 | Function | Description |
 |----------|-------------|
 | `load_ipd()` | Load IPD from a `data.frame`, tibble, `.csv`, or `.RData` file |
-| `km_est()` | Kaplan-Meier estimation for two groups |
+| `km_est()` | Kaplan-Meier estimation with Greenwood variance, pointwise CI, and descriptive statistics |
 | `nauc()` | Normalised Area Under the Curve |
 | `ksdist()` | Kolmogorov-Smirnov distance |
 | `rmse()` | Root Mean Square Error |
 | `kmplot()` | KM plots with metric annotations |
-| `summarytable()` | Summary table of all three metrics by subgroup |
+| `summarytable()` | Summary table of descriptive statistics and all three metrics by subgroup |
 | `gen_dummy_data()` | Generate dummy IPD for examples and testing |
 
 ## Quick start
@@ -64,7 +66,9 @@ res <- summarytable(
   time_var      = "TIME",
   event_var     = "EVENT",
   tau           = 36,
-  subgroup_vars = c("SEX", "REGION", "SEX:REGION")
+  subgroup_vars = c("SEX", "REGION", "SEX:REGION"),
+  label_group1  = "Original",
+  label_group2  = "Emulated"
 )
 print(res)
 
@@ -95,6 +99,18 @@ to one endpoint before passing to any function:
 ```r
 ipd_os <- ipd[ipd$TYPE == "OS", ]
 ```
+
+## KM estimation details
+
+`km_est()` is implemented from scratch without relying on the `survival`
+package. It returns:
+
+- KM survival estimates (`surv`) per group
+- Greenwood variance (`var_surv`) and pointwise confidence bands
+  (`surv_lo`, `surv_hi`) using the log transformation -- equivalent to
+  `survival::survfit(conf.type = "log")`
+- Descriptive statistics per group (`desc1`, `desc2`): sample size, event
+  count, event rate, median survival time and its confidence interval
 
 ## Documentation
 

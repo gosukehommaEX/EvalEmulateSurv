@@ -9,7 +9,8 @@ km_est(
   data_group2,
   time_var = "TIME",
   event_var = "EVENT",
-  tau = NULL
+  tau = NULL,
+  conf_level = 0.95
 )
 }
 \arguments{
@@ -33,20 +34,28 @@ Default \code{"TIME"}.}
 \item{tau}{Numeric scalar. Truncation time. KM estimates are
 computed up to \code{tau}. If \code{NULL} (default), the maximum
 observed time across both groups is used.}
+
+\item{conf_level}{Numeric in \code{(0, 1)}. Confidence level for the
+pointwise CI band and the median CI. Default \code{0.95}.}
 }
 \value{
 A named list with the following components:
 \describe{
-\item{\code{km1}}{A \code{data.frame} with columns \code{time}
-and \code{surv} representing the KM step function for group 1.
-Row \eqn{i} gives \eqn{\hat{S}(t)} on
-\eqn{[t_{(i)}, t_{(i+1)})}.}
+\item{\code{km1}}{A \code{data.frame} with columns \code{time},
+\code{surv}, \code{var_surv} (Greenwood variance), \code{surv_lo}
+(lower pointwise CI band), and \code{surv_hi} (upper pointwise CI
+band) for group 1.}
 \item{\code{km2}}{Same structure as \code{km1} for group 2.}
 \item{\code{tau}}{The truncation time actually used.}
 \item{\code{t_max_obs}}{The maximum observed time across both
 groups (before truncation).}
 \item{\code{time_var}}{The name of the time variable used.}
 \item{\code{event_var}}{The name of the event variable used.}
+\item{\code{desc1}}{A named list of descriptive statistics for group 1:
+\code{n}, \code{n_events}, \code{n_censored}, \code{event_rate},
+\code{median}, \code{ci_lower}, \code{ci_upper}.}
+\item{\code{desc2}}{Same structure as \code{desc1} for group 2.}
+\item{\code{conf_level}}{The confidence level used.}
 }
 }
 \description{
@@ -54,12 +63,13 @@ Computes Kaplan-Meier (KM) step functions for two groups from raw
 individual patient data (IPD). The KM estimator is implemented from
 scratch without relying on the \pkg{survival} package. The output is
 a structured list that serves as the common input for \code{nauc()},
-\code{ksdist()}, \code{rmse()}, and \code{kmplot()}. Input data can
-be supplied as a \code{data.frame}, tibble, path to a \code{.csv}
-file, or path to an \code{.RData} / \code{.rda} file containing a
-single object, via \code{\link{load_ipd}}. For \code{.RData} files
-containing multiple objects, call \code{\link{load_ipd}} explicitly
-with the \code{rdata_object} argument before passing the result here.
+\code{ksdist()}, \code{rmse()}, \code{kmplot()}, and
+\code{summarytable()}. Input data can be supplied as a \code{data.frame},
+tibble, path to a \code{.csv} file, or path to an \code{.RData} /
+\code{.rda} file containing a single object, via \code{\link{load_ipd}}.
+For \code{.RData} files containing multiple objects, call
+\code{\link{load_ipd}} explicitly with the \code{rdata_object} argument
+before passing the result here.
 }
 \details{
 The KM estimate at each event time \eqn{t_{(j)}} is computed as:
@@ -76,6 +86,31 @@ The returned step function represents \eqn{\hat{S}(t)} on the
 half-open interval \eqn{[t_{(j)}, t_{(j+1)})}, i.e., the survival
 probability is constant between consecutive event times and drops
 at each event time (left-continuous convention).
+
+\strong{Greenwood variance and pointwise confidence band:}
+
+The variance of \eqn{\hat{S}(t)} is estimated by Greenwood's formula:
+\deqn{
+  \widehat{\mathrm{Var}}(\hat{S}(t)) =
+  \hat{S}(t)^2 \sum_{t_{(j)} \le t}
+  \frac{d_j}{n_j (n_j - d_j)}
+}
+A pointwise \code{conf_level} confidence band is constructed on the log
+scale (same as \code{survival::survfit} with \code{conf.type = "log"}):
+\deqn{
+  \exp\!\left(\log \hat{S}(t) \pm
+  z_{\alpha/2} \frac{\sqrt{\widehat{\mathrm{Var}}(\hat{S}(t))}}
+  {\hat{S}(t)}\right)
+}
+
+\strong{Median survival time and CI:}
+
+The median is the smallest \eqn{t} such that \eqn{\hat{S}(t) \le 0.5}.
+The CI for the median is the range of times where the pointwise confidence
+band crosses 0.5: \code{ci_lower} is the smallest \eqn{t} where the lower
+band \eqn{\le 0.5}, and \code{ci_upper} is the smallest \eqn{t} where the
+upper band \eqn{\le 0.5}. \code{NA} is returned when a bound is not
+estimable within the observed range.
 }
 \examples{
 # -------------------------------------------------------------------
@@ -103,13 +138,14 @@ km_os <- km_est(
   event_var   = "EVENT",
   tau         = 36
 )
-head(km_os$km1)
-head(km_os$km2)
+head(km_os$km1)   # time, surv, var_surv, surv_lo, surv_hi
+km_os$desc1       # n, n_events, n_censored, event_rate, median, CI
+km_os$desc2
 km_os$tau
 km_os$t_max_obs
 
 # -------------------------------------------------------------------
-# 2. PFS, overall population -- data.frame input
+# 2. PFS, overall population
 # -------------------------------------------------------------------
 km_pfs <- km_est(
   data_group1 = grp1_pfs,
@@ -118,7 +154,7 @@ km_pfs <- km_est(
   event_var   = "EVENT",
   tau         = 24
 )
-head(km_pfs$km1)
+km_pfs$desc1
 
 # -------------------------------------------------------------------
 # 3. CSV file input via load_ipd()
@@ -174,5 +210,6 @@ unlink(tmp_multi)
 }
 \seealso{
 \code{\link{load_ipd}}, \code{\link{nauc}},
-\code{\link{ksdist}}, \code{\link{rmse}}, \code{\link{kmplot}}
+\code{\link{ksdist}}, \code{\link{rmse}}, \code{\link{kmplot}},
+\code{\link{summarytable}}
 }
