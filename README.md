@@ -56,8 +56,8 @@ ipd <- gen_dummy_data(seed = 42)
 
 # Split by endpoint and group
 ipd_os  <- ipd[ipd$TYPE == "OS", ]
-grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+grp1_os <- ipd_os[ipd_os$GROUP == 1, ]
+grp2_os <- ipd_os[ipd_os$GROUP == 2, ]
 
 # Summary table: overall + subgroups
 res <- summarytable(
