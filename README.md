@@ -29,8 +29,9 @@ time with confidence interval) are also provided alongside the metrics.
 ## Installation
 
 ```r
-# install.packages("devtools")
-devtools::install_github("gosukehommaEX/EvalEmulateSurv")
+# Install from GitHub (requires the remotes package)
+# Use build_vignettes = TRUE to include the vignette
+remotes::install_github("gohomma/EvalEmulateSurv", build_vignettes = TRUE)
 ```
 
 ## Main functions
@@ -56,8 +57,8 @@ ipd <- gen_dummy_data(seed = 42)
 
 # Split by endpoint and group
 ipd_os  <- ipd[ipd$TYPE == "OS", ]
-grp1_os <- ipd_os[ipd_os$GROUP == 1, ]
-grp2_os <- ipd_os[ipd_os$GROUP == 2, ]
+grp1_os <- ipd_os[ipd_os$GROUP == "1", ]   # group 1 (e.g., original IPD)
+grp2_os <- ipd_os[ipd_os$GROUP == "2", ]   # group 2 (e.g., emulated IPD)
 
 # Summary table: overall + subgroups
 res <- summarytable(
@@ -115,10 +116,14 @@ package. It returns:
 ## Documentation
 
 Full documentation and worked examples are provided in the package vignettes.
-After installation, access them with:
+After installation (with `build_vignettes = TRUE`), access them with:
 
 ```r
+# Browse all vignettes
 browseVignettes("EvalEmulateSurv")
+
+# Or open directly
+vignette("getting-started", package = "EvalEmulateSurv")
 ```
 
 ## License
