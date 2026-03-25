@@ -1,6 +1,5 @@
 Package: EvalEmulateSurv
-Type: Package
-Title: Evaluate accuracy of the emulated survival dataset
+Title: Evaluation of Emulated Survival Individual Patient Data
 Version: 0.1.0
 Authors@R: c(
     person(given  = "Gosuke",
@@ -13,10 +12,31 @@ Authors@R: c(
     person(given  = "Annie",
            family = "Wang",
            role   = c("aut")))
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides tools to evaluate how well emulated individual patient
+    data (IPD) reproduces the original IPD in terms of survival endpoints.
+    Three complementary metrics are implemented: the Normalised Area Under the
+    Curve (NAUC), the Kolmogorov-Smirnov (K-S) distance, and the Root Mean
+    Square Error (RMSE) between Kaplan-Meier survival curves. Metrics can be
+    computed for the overall population and for subgroups defined by single
+    variables or N-way interaction terms. Results are summarised via a
+    dedicated S3 class with formatted plain-text and kable output.
 License: MIT + file LICENSE
+URL: https://github.com/gohomma/EvalEmulateSurv
+BugReports: https://github.com/gohomma/EvalEmulateSurv/issues
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.1.0)
+Imports:
+    dplyr,
+    ggplot2,
+    knitr,
+    tools,
+    utils
+Suggests:
+    kableExtra,
+    patchwork,
+    testthat (>= 3.0.0),
+    rmarkdown
+Config/testthat/edition: 3
