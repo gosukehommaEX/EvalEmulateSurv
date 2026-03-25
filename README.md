@@ -31,7 +31,7 @@ time with confidence interval) are also provided alongside the metrics.
 ```r
 # Install from GitHub (requires the remotes package)
 # Use build_vignettes = TRUE to include the vignette
-remotes::install_github("gohomma/EvalEmulateSurv", build_vignettes = TRUE)
+remotes::install_github("gosukehommaEX/EvalEmulateSurv", build_vignettes = TRUE)
 ```
 
 ## Main functions

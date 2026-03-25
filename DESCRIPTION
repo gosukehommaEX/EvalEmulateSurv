@@ -1,17 +1,11 @@
 Package: EvalEmulateSurv
 Title: Evaluation of Emulated Survival Individual Patient Data
 Version: 0.1.0
-Authors@R: c(
+Authors@R:
     person(given  = "Gosuke",
            family = "Homma",
            role   = c("aut", "cre"),
-           email  = "my.name.is.gosuke@gmail.com"),
-    person(given  = "Eamonn",
-           family = "Bolger",
-           role   = c("aut")),
-    person(given  = "Annie",
-           family = "Wang",
-           role   = c("aut")))
+           email  = "my.name.is.gosuke@gmail.com")
 Description: Provides tools to evaluate how well emulated individual patient
     data (IPD) reproduces the original IPD in terms of survival endpoints.
     Three complementary metrics are implemented: the Normalised Area Under the
@@ -21,11 +15,11 @@ Description: Provides tools to evaluate how well emulated individual patient
     variables or N-way interaction terms. Results are summarised via a
     dedicated S3 class with formatted plain-text and kable output.
 License: MIT + file LICENSE
-URL: https://github.com/gohomma/EvalEmulateSurv
-BugReports: https://github.com/gohomma/EvalEmulateSurv/issues
+URL: https://github.com/gosukehommaEX/EvalEmulateSurv
+BugReports: https://github.com/gosukehommaEX/EvalEmulateSurv/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+RoxygenNote: 7.3.2
 Depends:
     R (>= 4.1.0)
 Imports:
