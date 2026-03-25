@@ -29,8 +29,8 @@ time with confidence interval) are also provided alongside the metrics.
 ## Installation
 
 ```r
-# Install from GitHub (requires the remotes package)
-remotes::install_github("gohomma/EvalEmulateSurv")
+# install.packages("devtools")
+devtools::install_github("gosukehommaEX/EvalEmulateSurv")
 ```
 
 ## Main functions
