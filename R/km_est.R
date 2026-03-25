@@ -237,6 +237,11 @@ km_est <- function(data_group1,
   # tau_max are treated as censored at tau_max.
   # ---------------------------------------------------------------------------
   .km_stepfun <- function(time_vec, event_vec, tau_max) {
+    # Remove rows with NA in time or event
+    valid       <- !is.na(time_vec) & !is.na(event_vec)
+    time_vec    <- time_vec[valid]
+    event_vec   <- event_vec[valid]
+
     event_times <- sort(unique(time_vec[event_vec == 1L]))
     event_times <- event_times[event_times <= tau_max]
 
@@ -315,6 +320,11 @@ km_est <- function(data_group1,
   # median and CI reflect the complete follow-up.
   # ---------------------------------------------------------------------------
   .desc_one <- function(time_vec, event_vec) {
+    # Remove rows with NA in time or event
+    valid     <- !is.na(time_vec) & !is.na(event_vec)
+    time_vec  <- time_vec[valid]
+    event_vec <- event_vec[valid]
+
     n          <- length(time_vec)
     n_events   <- sum(event_vec)
     n_censored <- n - n_events
