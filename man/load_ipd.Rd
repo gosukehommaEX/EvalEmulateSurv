@@ -37,7 +37,7 @@ one object, or the name of the target object within a multi-object
 \code{.RData} file supplied via \code{rdata_object}.
 }
 The function is intended as a pre-processing helper for
-\code{nauc()}, \code{ks_distance()}, \code{rmse()}, and \code{km_est()},
+\code{nauc()}, \code{ksdist()}, \code{rmse()}, and \code{km_est()},
 which all expect a \code{data.frame} for their \code{data_group1} and
 \code{data_group2} arguments.
 }
@@ -63,19 +63,15 @@ target object.
 # 1. In-memory data.frame (most common usage)
 # -------------------------------------------------------------------
 ipd <- gen_dummy_data()
-orig <- load_ipd(ipd[ipd$GROUP == "Drug" & ipd$TYPE == "OS", ])
+orig <- load_ipd(ipd[ipd$GROUP == "1" & ipd$TYPE == "OS", ])
 class(orig)  # "data.frame"
 
 # -------------------------------------------------------------------
-# 2. In-memory tibble
+# 2. In-memory data.frame (same as tibble input)
 # -------------------------------------------------------------------
-if (requireNamespace("dplyr", quietly = TRUE)) {
-  library(dplyr)
-  ipd_tbl <- dplyr::as_tibble(gen_dummy_data())
-  orig_tbl <- load_ipd(ipd_tbl[ipd_tbl$GROUP == "Drug" &
-                                 ipd_tbl$TYPE == "OS", ])
-  class(orig_tbl)  # "data.frame"
-}
+ipd_df  <- gen_dummy_data()
+orig_df <- load_ipd(ipd_df[ipd_df$GROUP == "1" & ipd_df$TYPE == "OS", ])
+class(orig_df)  # "data.frame"
 
 # -------------------------------------------------------------------
 # 3. CSV file
@@ -100,8 +96,8 @@ unlink(tmp_rda)
 # 5. RData file containing multiple objects (rdata_object required)
 # -------------------------------------------------------------------
 tmp_rda2 <- tempfile(fileext = ".RData")
-ipd_drug    <- gen_dummy_data()[gen_dummy_data()$GROUP == "Drug", ]
-ipd_control <- gen_dummy_data()[gen_dummy_data()$GROUP == "Control", ]
+ipd_drug    <- gen_dummy_data()[gen_dummy_data()$GROUP == "1", ]
+ipd_control <- gen_dummy_data()[gen_dummy_data()$GROUP == "2", ]
 save(ipd_drug, ipd_control, file = tmp_rda2)
 orig_multi <- load_ipd(tmp_rda2, rdata_object = "ipd_drug")
 head(orig_multi)
@@ -110,5 +106,5 @@ unlink(tmp_rda2)
 }
 \seealso{
 \code{\link{km_est}}, \code{\link{nauc}},
-\code{\link{ks_distance}}, \code{\link{rmse}}
+\code{\link{ksdist}}, \code{\link{rmse}}
 }

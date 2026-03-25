@@ -154,13 +154,13 @@ ipd <- gen_dummy_data(seed = 42)
 
 # Filter to OS endpoint and split by group
 ipd_os  <- ipd[ipd$TYPE == "OS", ]
-grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+grp1_os <- ipd_os[ipd_os$GROUP == "1",    ]
+grp2_os <- ipd_os[ipd_os$GROUP == "2", ]
 
 # Filter to PFS endpoint and split by group
 ipd_pfs  <- ipd[ipd$TYPE == "PFS", ]
-grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "Drug",    ]
-grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
+grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "1",    ]
+grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "2", ]
 
 # -------------------------------------------------------------------
 # 1. Overall population only (subgroup_var = NULL)

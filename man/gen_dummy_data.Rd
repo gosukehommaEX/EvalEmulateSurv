@@ -18,23 +18,19 @@ gen_dummy_data(
 )
 }
 \arguments{
-\item{n_drug}{Integer. Number of patients in the Drug group.
+\item{n_drug}{Integer. Number of patients in group 1.
 Default \code{80}.}
 
-\item{n_control}{Integer. Number of patients in the Control group.
+\item{n_control}{Integer. Number of patients in group 2.
 Default \code{80}.}
 
-\item{rate_os_drug}{Numeric. Exponential rate for OS in the Drug
-group. Default \code{0.030}.}
+\item{rate_os_drug}{Numeric. Exponential rate for OS in group 1. Default \code{0.030}.}
 
-\item{rate_os_control}{Numeric. Exponential rate for OS in the Control
-group. Default \code{0.042}.}
+\item{rate_os_control}{Numeric. Exponential rate for OS in group 2. Default \code{0.042}.}
 
-\item{rate_pfs_drug}{Numeric. Exponential rate for PFS in the Drug
-group. Default \code{0.055}.}
+\item{rate_pfs_drug}{Numeric. Exponential rate for PFS in group 1. Default \code{0.055}.}
 
-\item{rate_pfs_control}{Numeric. Exponential rate for PFS in the Control
-group. Default \code{0.075}.}
+\item{rate_pfs_control}{Numeric. Exponential rate for PFS in group 2. Default \code{0.075}.}
 
 \item{event_prob}{Numeric in \code{[0, 1]}. Probability that an event
 (not censoring) occurred. Applied identically across all groups and
@@ -58,8 +54,8 @@ following columns:
 \describe{
 \item{\code{ID}}{Integer patient identifier (unique within each
 \code{GROUP}).}
-\item{\code{GROUP}}{Character. Treatment group: \code{"Drug"} or
-\code{"Control"}.}
+\item{\code{GROUP}}{Character. Treatment group: \code{"1"} or
+\code{"2"}.}
 \item{\code{TYPE}}{Character. Endpoint name: \code{"OS"} or
 \code{"PFS"}.}
 \item{\code{TIME}}{Numeric. Observed time (survival or censoring
@@ -100,8 +96,8 @@ table(ipd$GROUP, ipd$TYPE)
 
 # Filter to OS endpoint for km_est()
 ipd_os <- ipd[ipd$TYPE == "OS", ]
-orig    <- ipd_os[ipd_os$GROUP == "Drug", ]
-emu     <- ipd_os[ipd_os$GROUP == "Control", ]
+orig    <- ipd_os[ipd_os$GROUP == "1", ]
+emu     <- ipd_os[ipd_os$GROUP == "2", ]
 
 # Smaller dataset with custom seed
 ipd_small <- gen_dummy_data(n_drug = 40, n_control = 40, seed = 123)

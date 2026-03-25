@@ -16,13 +16,13 @@ ipd <- gen_dummy_data(seed = 42)
 
 # OS endpoint
 ipd_os  <- ipd[ipd$TYPE == "OS", ]
-grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+grp1_os <- ipd_os[ipd_os$GROUP == "1",    ]
+grp2_os <- ipd_os[ipd_os$GROUP == "2", ]
 
 # PFS endpoint
 ipd_pfs  <- ipd[ipd$TYPE == "PFS", ]
-grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "Drug",    ]
-grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
+grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "1",    ]
+grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "2", ]
 
 tau_os  <- 36
 tau_pfs <- 24
@@ -44,9 +44,9 @@ test_that("gen_dummy_data: correct number of rows", {
   expect_equal(nrow(d), 220L)
 })
 
-test_that("gen_dummy_data: GROUP levels are Drug and Control", {
+test_that("gen_dummy_data: GROUP levels are 1 and 2", {
   d <- gen_dummy_data(seed = 1)
-  expect_setequal(unique(d$GROUP), c("Drug", "Control"))
+  expect_setequal(unique(d$GROUP), c("1", "2"))
 })
 
 test_that("gen_dummy_data: TYPE levels are OS and PFS", {
@@ -184,9 +184,9 @@ test_that("km_est: desc1 and desc2 have correct structure", {
   res <- km_est(grp1_os, grp2_os,
                 time_var = "TIME", event_var = "EVENT", tau = tau_os)
   expect_named(res$desc1, c("n", "n_events", "n_censored", "event_rate",
-                            "median", "ci_lower", "ci_upper"))
+                             "median", "ci_lower", "ci_upper"))
   expect_named(res$desc2, c("n", "n_events", "n_censored", "event_rate",
-                            "median", "ci_lower", "ci_upper"))
+                             "median", "ci_lower", "ci_upper"))
 })
 
 test_that("km_est: desc1 counts are consistent", {

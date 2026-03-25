@@ -114,10 +114,11 @@
 #' @references
 #' Zhao, Z. et al. (2025). SynthIPD: Generating synthetic individual
 #' patient data from published Kaplan-Meier curves and summary statistics.
+#' arXiv:2509.16466.
 #'
-#' Lang, et al. (2025). RESOLVE-IPD: Reconstruction of Survival data with
-#' Latent Outcomes from published Evidence for Individual Patient Data
-#' meta-analysis.
+#' Lang, L. et al. (2025). RESOLVE-IPD: High-Fidelity Individual Patient
+#' Data Reconstruction and Uncertainty-Aware Subgroup Meta-Analysis.
+#' arXiv:2511.01785.
 #'
 #' @seealso \code{\link{load_ipd}}, \code{\link{km_est}}, \code{\link{nauc}},
 #'   \code{\link{ksdist}}, \code{\link{rmse}}
@@ -131,13 +132,13 @@
 #'
 #' # Filter to OS endpoint and split by group
 #' ipd_os  <- ipd[ipd$TYPE == "OS", ]
-#' grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-#' grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+#' grp1_os <- ipd_os[ipd_os$GROUP == "1",    ]
+#' grp2_os <- ipd_os[ipd_os$GROUP == "2", ]
 #'
 #' # Filter to PFS endpoint and split by group
 #' ipd_pfs  <- ipd[ipd$TYPE == "PFS", ]
-#' grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "Drug",    ]
-#' grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
+#' grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "1",    ]
+#' grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "2", ]
 #'
 #' # -------------------------------------------------------------------
 #' # 1. Overall only
@@ -590,6 +591,12 @@ print.EvalMetrics <- function(x, digits = 4L, digits_surv = 2L,
       median_w, digits_surv, ci_w,
       metric_w, digits, metric_w, digits, metric_w, digits)
 
+    # Format string for group 2 row: metrics columns left blank
+    fmt_row2 <- sprintf(
+      "  %%-%ds %%-%ds %%%dd %%%dd %%%d.%df %%-%ds\n",
+      stratum_w - 1L, lbl_w - 1L, n_w, ev_w,
+      median_w, digits_surv, ci_w)
+
     fmt_agg <- sprintf(
       "  %%-%ds %%-%ds %%%ds %%%ds %%%ds %%-%ds  %%%d.%df %%%d.%df %%%d.%df\n",
       stratum_w - 1L, lbl_w - 1L, n_w, ev_w, median_w, ci_w,
@@ -621,12 +628,11 @@ print.EvalMetrics <- function(x, digits = 4L, digits_surv = 2L,
                     r$n_group1, r$events_group1,
                     med1, r$median_ci_group1,
                     r$nauc, r$ks, r$rmse))
-        # Group 2 row (stratum and metrics blank)
-        cat(sprintf(fmt_row,
+        # Group 2 row: descriptive stats only, metrics left blank
+        cat(sprintf(fmt_row2,
                     "", lbl2,
                     r$n_group2, r$events_group2,
-                    med2, r$median_ci_group2,
-                    r$nauc, r$ks, r$rmse))
+                    med2, r$median_ci_group2))
       }
 
       if (sp != "Overall" && !is.na(rows$nauc_aggregate[1])) {
@@ -671,9 +677,9 @@ print.EvalMetrics <- function(x, digits = 4L, digits_surv = 2L,
             N        = r$n_group2, Events = r$events_group2,
             Median   = fmt_surv(r$median_group2),
             CI       = r$median_ci_group2,
-            NAUC     = fmt_metric(r$nauc),
-            KS       = fmt_metric(r$ks),
-            RMSE     = fmt_metric(r$rmse),
+            NAUC     = "",
+            KS       = "",
+            RMSE     = "",
             check.names = FALSE, stringsAsFactors = FALSE)
         )
       }))

@@ -21,18 +21,14 @@
 #' \code{nauc()}, \code{ks_distance()}, \code{rmse()}) to be applied
 #' after filtering by \code{TYPE}.
 #'
-#' @param n_drug     Integer. Number of patients in the Drug group.
+#' @param n_drug     Integer. Number of patients in group 1.
 #'   Default \code{80}.
-#' @param n_control  Integer. Number of patients in the Control group.
+#' @param n_control  Integer. Number of patients in group 2.
 #'   Default \code{80}.
-#' @param rate_os_drug     Numeric. Exponential rate for OS in the Drug
-#'   group. Default \code{0.030}.
-#' @param rate_os_control  Numeric. Exponential rate for OS in the Control
-#'   group. Default \code{0.042}.
-#' @param rate_pfs_drug    Numeric. Exponential rate for PFS in the Drug
-#'   group. Default \code{0.055}.
-#' @param rate_pfs_control Numeric. Exponential rate for PFS in the Control
-#'   group. Default \code{0.075}.
+#' @param rate_os_drug     Numeric. Exponential rate for OS in group 1. Default \code{0.030}.
+#' @param rate_os_control  Numeric. Exponential rate for OS in group 2. Default \code{0.042}.
+#' @param rate_pfs_drug    Numeric. Exponential rate for PFS in group 1. Default \code{0.055}.
+#' @param rate_pfs_control Numeric. Exponential rate for PFS in group 2. Default \code{0.075}.
 #' @param event_prob Numeric in \code{[0, 1]}. Probability that an event
 #'   (not censoring) occurred. Applied identically across all groups and
 #'   endpoints. Default \code{0.85}.
@@ -51,8 +47,8 @@
 #' \describe{
 #'   \item{\code{ID}}{Integer patient identifier (unique within each
 #'     \code{GROUP}).}
-#'   \item{\code{GROUP}}{Character. Treatment group: \code{"Drug"} or
-#'     \code{"Control"}.}
+#'   \item{\code{GROUP}}{Character. Treatment group: \code{"1"} or
+#'     \code{"2"}.}
 #'   \item{\code{TYPE}}{Character. Endpoint name: \code{"OS"} or
 #'     \code{"PFS"}.}
 #'   \item{\code{TIME}}{Numeric. Observed time (survival or censoring
@@ -74,8 +70,8 @@
 #'
 #' # Filter to OS endpoint for km_est()
 #' ipd_os <- ipd[ipd$TYPE == "OS", ]
-#' orig    <- ipd_os[ipd_os$GROUP == "Drug", ]
-#' emu     <- ipd_os[ipd_os$GROUP == "Control", ]
+#' orig    <- ipd_os[ipd_os$GROUP == "1", ]
+#' emu     <- ipd_os[ipd_os$GROUP == "2", ]
 #'
 #' # Smaller dataset with custom seed
 #' ipd_small <- gen_dummy_data(n_drug = 40, n_control = 40, seed = 123)
@@ -144,12 +140,12 @@ gen_dummy_data <- function(n_drug          = 80L,
   # ---------------------------------------------------------------------------
   # Generate survival data for each group x endpoint combination
   # ---------------------------------------------------------------------------
-  drug_os    <- .make_block(n_drug,    rate_os_drug,     "Drug",    "OS")
-  control_os <- .make_block(n_control, rate_os_control,  "Control", "OS")
-  drug_pfs   <- .make_block(n_drug,    rate_pfs_drug,    "Drug",    "PFS")
-  control_pfs <- .make_block(n_control, rate_pfs_control, "Control", "PFS")
+  grp1_os_blk <- .make_block(n_drug,    rate_os_drug,     "1", "OS")
+  grp2_os_blk <- .make_block(n_control, rate_os_control,  "2", "OS")
+  grp1_pfs_blk <- .make_block(n_drug,    rate_pfs_drug,    "1", "PFS")
+  grp2_pfs_blk <- .make_block(n_control, rate_pfs_control, "2", "PFS")
 
-  ipd <- rbind(drug_os, control_os, drug_pfs, control_pfs)
+  ipd <- rbind(grp1_os_blk, grp2_os_blk, grp1_pfs_blk, grp2_pfs_blk)
 
   # ---------------------------------------------------------------------------
   # Assign covariates (SEX and REGION) consistent within patient x group
@@ -172,14 +168,14 @@ gen_dummy_data <- function(n_drug          = 80L,
 
   covar_drug <- data.frame(
     ID     = drug_patients,
-    GROUP  = "Drug",
+    GROUP  = "1",
     SEX    = sex_all[seq_len(n_drug)],
     REGION = region_all[seq_len(n_drug)],
     stringsAsFactors = FALSE
   )
   covar_control <- data.frame(
     ID     = control_patients,
-    GROUP  = "Control",
+    GROUP  = "2",
     SEX    = sex_all[n_drug + seq_len(n_control)],
     REGION = region_all[n_drug + seq_len(n_control)],
     stringsAsFactors = FALSE
@@ -191,10 +187,10 @@ gen_dummy_data <- function(n_drug          = 80L,
   # ---------------------------------------------------------------------------
   ipd <- merge(ipd, covar, by = c("ID", "GROUP"), all.x = TRUE)
 
-  # Restore row order: Drug OS, Control OS, Drug PFS, Control PFS
+  # Restore row order: group1 OS, group2 OS, group1 PFS, group2 PFS
   ipd <- ipd[order(
     match(ipd$TYPE,  c("OS", "PFS")),
-    match(ipd$GROUP, c("Drug", "Control")),
+    match(ipd$GROUP, c("1", "2")),
     ipd$ID
   ), ]
   row.names(ipd) <- NULL

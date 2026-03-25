@@ -1,3 +1,8 @@
+# Suppress R CMD check NOTEs for ggplot2 aes() column name variables
+# used inside .build_plot(). These are data column names, not global vars.
+utils::globalVariables(c("xmin", "xmax", "ymin", "ymax",
+                         "surv", "group", "x_annot", "label"))
+
 #' Kaplan-Meier Plot with NAUC, K-S Distance, and RMSE Annotation
 #'
 #' @description
@@ -120,13 +125,13 @@
 #'
 #' # Filter to OS endpoint and split by group
 #' ipd_os  <- ipd[ipd$TYPE == "OS", ]
-#' grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-#' grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+#' grp1_os <- ipd_os[ipd_os$GROUP == "1",    ]
+#' grp2_os <- ipd_os[ipd_os$GROUP == "2", ]
 #'
 #' # Filter to PFS endpoint and split by group
 #' ipd_pfs  <- ipd[ipd$TYPE == "PFS", ]
-#' grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "Drug",    ]
-#' grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
+#' grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "1",    ]
+#' grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "2", ]
 #'
 #' # -------------------------------------------------------------------
 #' # 1. Overall population only (subgroup_var = NULL)
@@ -453,7 +458,7 @@ kmplot <- function(data_group1,
     annot_df$stratum  <- factor(annot_df$stratum,  levels = strata)
 
     step_df$group <- factor(step_df$group,
-                             levels = c(label_group1, label_group2))
+                            levels = c(label_group1, label_group2))
 
     # Build ggplot with facet_wrap
     ggplot2::ggplot() +

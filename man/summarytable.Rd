@@ -153,13 +153,13 @@ ipd <- gen_dummy_data(seed = 42)
 
 # Filter to OS endpoint and split by group
 ipd_os  <- ipd[ipd$TYPE == "OS", ]
-grp1_os <- ipd_os[ipd_os$GROUP == "Drug",    ]
-grp2_os <- ipd_os[ipd_os$GROUP == "Control", ]
+grp1_os <- ipd_os[ipd_os$GROUP == "1",    ]
+grp2_os <- ipd_os[ipd_os$GROUP == "2", ]
 
 # Filter to PFS endpoint and split by group
 ipd_pfs  <- ipd[ipd$TYPE == "PFS", ]
-grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "Drug",    ]
-grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "Control", ]
+grp1_pfs <- ipd_pfs[ipd_pfs$GROUP == "1",    ]
+grp2_pfs <- ipd_pfs[ipd_pfs$GROUP == "2", ]
 
 # -------------------------------------------------------------------
 # 1. Overall only
@@ -243,10 +243,11 @@ as.data.frame(res_pfs)
 \references{
 Zhao, Z. et al. (2025). SynthIPD: Generating synthetic individual
 patient data from published Kaplan-Meier curves and summary statistics.
+arXiv:2509.16466.
 
-Lang, et al. (2025). RESOLVE-IPD: Reconstruction of Survival data with
-Latent Outcomes from published Evidence for Individual Patient Data
-meta-analysis.
+Lang, L. et al. (2025). RESOLVE-IPD: High-Fidelity Individual Patient
+Data Reconstruction and Uncertainty-Aware Subgroup Meta-Analysis.
+arXiv:2511.01785.
 }
 \seealso{
 \code{\link{load_ipd}}, \code{\link{km_est}}, \code{\link{nauc}},
